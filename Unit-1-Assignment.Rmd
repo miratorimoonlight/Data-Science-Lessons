@@ -1,0 +1,189 @@
+---
+title: "Unit 1 Assignment"
+output: html_notebook
+---
+
+# 1. Calculate the following:
+### a.  $\Sigma$($a^{4}$ + 5 $a^{3}$) with and without loop.
+
+```{r}
+a = 5:100
+
+# WITH loop
+result = 0
+for (each_a in a) {
+  result = result + (each_a^4 + 5*(each_a^3))
+}
+result
+
+
+# WITHOUT loop
+x = sum(a^4 + 5*a^3)
+x
+```
+
+
+### b. Calculate $U_{40}$  which is a series, $U_{n}$ = $U_{n-1}$ + $U_{n-2}$ , with $U_{1}$= 1 and $U_{2}$= 2 ?
+
+```{r}
+n = 40
+U = 1:n
+Un = U[n-1] + U[n-2]
+Un
+```
+
+### c. Write a program to calculate cos x, sin x(Taylor series) , Get the input(x) from the user and n=45.
+```{r}
+# cos x
+# need pracma package to run taylor function
+x = as.numeric(readline(prompt="Enter x: "))
+taylor(cos, x, n=4)
+
+# sin x
+x = as.numeric(readline(prompt="Enter x: "))
+taylor(sin, x, n=4)
+```
+
+### d. Create a vector of the values of e^x * cos(x) at x = 3, 3.1, 3.2, . . . , 6.
+```{r}
+x = seq(3, 6, 0.1)
+x = exp(x) * cos(x)
+x
+```
+
+### e. x <- 1:300. How many numbers in x are divisible by 2?
+```{r}
+x = 1:300
+count = 0L
+for(each in x) {
+  if(each%%2 == 0) {
+    count = count + 1
+  }
+}
+count
+```
+
+# 2. Solve the following system of linear equations using Gaussian elimination (Ax=y)
+### x + 2y + 3z = 9
+
+### 2x - y + 2z = −3
+
+### 3x + 3y + z = 5
+```{r}
+a = matrix(c(1, 2, 3,
+              2, -1, 2,
+              3,  3, 1), 3, 3, byrow=TRUE)
+
+b = c(9, -3, 5)
+
+result = gaussianElimination(a, b)
+result
+```
+
+
+# 3. Use outer function to create the following matrix
+### 0 1 2 3 4
+
+### 1 2 3 4 5
+
+### 2 3 4 5 6
+
+### 3 4 5 6 7
+
+### 4 5 6 7 8
+```{r}
+row = 0:4
+col = 0:4
+outer(row, col, "+")
+```
+
+# 4. Get the COVID-19 Dataset from the data sources. Number of observations should be more than 100.Then, report the following informations
+### a. Data source detail
+```{r}
+library(readr)
+dataSet <- read.csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv", na.strings = "", fileEncoding = "UTF-8-BOM")
+dataSet
+```
+### b. Explain the Unit & Necessity of each variable 
+```{r}
+names(dataSet)
+```
+
+### c. Find the missing values(rows & columns) and replace them with mean(Tidy Dataset) 
+```{r}
+
+dataSet[] <- lapply(dataSet, function(x) { 
+  x[is.na(x)] <- mean(x, na.rm = TRUE)
+  x
+})
+dataSet
+```
+
+
+### d. Generate the two new variables(Var1:Mean, Var2: Median from available variable) 
+```{r}
+# Click on arrow (on the LEFT of the table) to see Mean and Median columns 
+dataSet %>% mutate(Mean = mean(cases),Median = median(cases))
+```
+
+### e. Rename the two existing variables
+```{r}
+dataSet %>% rename(A = countriesAndTerritories, B = geoId)
+```
+
+### f. Create a plot using following instructions (using 7 layers of Grammar of Graphics)
+#### i. Choose x and y axis(aes) 
+```{r}
+# Take countriesAndTerritories as x and cases as y
+data = dataSet %>% count(countriesAndTerritories, wt = cases)
+data
+countries = data[['countriesAndTerritories']]
+cases = data[['n']]
+```
+
+#### ii. geom_point() - specify the parameters, size : 5, color: red, alpha: 1/5
+```{r}
+gp = geom_point(size = 5, alpha = 1/5, color = "red")
+gp
+plot = ggplot(x = data, mapping = aes(x = countries, y = cases)) + gp
+plot
+```
+
+
+#### iii. Use Facet grid, cartesian coordinates & geom_smooth() 
+```{r}
+# Facet grid
+plot + facet_grid(cases)
+```
+
+```{r}
+#cartesian coordinates
+plot + coord_cartesian()
+```
+```{r}
+#geom_smooth()
+plot + geom_smooth(method="lm")
+```
+
+#### iv. Assign the title to x, y and graph 
+```{r}
+plot <- plot + ggtitle("Number of cases of Covid19 in various countries")
+plot
+```
+
+#### Export the graph to your working directory with the title called “covid_19_dataset.png”
+```{r}
+ggsave(filename = "covid_19_dataset.png", units = "cm", width = 80, height = 25)
+
+```
+
+
+
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
