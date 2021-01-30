@@ -11,7 +11,7 @@ R is a programming language, and developing environment used for statistic compu
 ## Basic R
 ```{r}
 # set working directory
-setwd(dir = "C:/Users/Sang Sonyratt/Documents/R")
+setwd(dir = "C:/Users/Moonlight/Desktop/R")
 
 # get working directory
 getwd()
